@@ -24,24 +24,10 @@ public class RequestHandler extends Thread {
         try (InputStream in = connection.getInputStream();
              OutputStream out = connection.getOutputStream()) {
 
-            // TODO: 18. 12. 11 사용자 요청에 대한 처리는 이 곳에 구현
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String requestUrl = getRequestUrl(br.readLine());
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-
-            String requestUrl = null;
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
-
-                if (line.equals("")) {
-                    break;
-                }
-
-                if (!line.contains(":")) {
-                    String[] tokens = line.split(" ");
-                    requestUrl = tokens[1];
-                }
-            }
+            printRequestInfo(br);
 
             User user = null;
 
@@ -68,6 +54,24 @@ public class RequestHandler extends Thread {
         } catch (IOException ie) {
             log.error(ie.getMessage());
         }
+    }
+
+    private void printRequestInfo(BufferedReader br) throws IOException {
+        String line;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+
+            if (line.equals("")) {
+                break;
+            }
+        }
+    }
+
+    private String getRequestUrl(String line) {
+        String requestUrl = null;
+        String[] tokens = line.split(" ");
+        requestUrl = tokens[1];
+        return requestUrl;
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
