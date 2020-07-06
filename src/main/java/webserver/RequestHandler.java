@@ -1,9 +1,6 @@
 package webserver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 import org.slf4j.Logger;
@@ -22,17 +19,30 @@ public class RequestHandler extends Thread {
 
         try (InputStream in = connection.getInputStream();
              OutputStream out = connection.getOutputStream()) {
+
             // TODO: 18. 12. 11 사용자 요청에 대한 처리는 이 곳에 구현
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+
+                if (line.equals("")) {
+                    break;
+                }
+            }
+
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = "Hello World! Hello JAVA! Welcome to HELL!".getBytes();
-            reponse200Header(dos, body.length);
+            response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException ie) {
             log.error(ie.getMessage());
         }
     }
 
-    private void reponse200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8 \r\n");
