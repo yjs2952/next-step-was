@@ -24,42 +24,16 @@ public class RequestHandler extends Thread {
         try (InputStream in = connection.getInputStream();
              OutputStream out = connection.getOutputStream()) {
 
-            // TODO: 18. 12. 11 사용자 요청에 대한 처리는 이 곳에 구현
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String requestUrl = getRequestUrl(br.readLine());
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+            printRequestInfo(br);
 
-            String requestUrl = null;
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
-
-                if (line.equals("")) {
-                    break;
-                }
-
-                if (!line.contains(":")) {
-                    String[] tokens = line.split(" ");
-                    requestUrl = tokens[1];
-                }
-            }
-
-            User user = null;
-
-            if (requestUrl != null && requestUrl.contains("create?")) {
-                int index = requestUrl.indexOf("?");
-                String requestPath = requestUrl.substring(0, index);
-                String params = requestUrl.substring(index + 1);
-
-                Map<String, String> paramsMap = HttpRequestUtils.parseQueryString(params);
-
-                user = new User(paramsMap.get("userId"), paramsMap.get("password"), paramsMap.get("name"), paramsMap.get("email"));
-
+            if (requestUrl != null && requestUrl.contains("create")) {
+                Map<String, String> paramsMap = HttpRequestUtils.parseQueryString(getParams(requestUrl));
+                User user = new User(paramsMap.get("userId"), paramsMap.get("password"), paramsMap.get("name"), paramsMap.get("email"));
                 System.out.println(user.toString());
-
-                return;
             }
-
-
 
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = Files.readAllBytes(new File("./webapp" + requestUrl).toPath());
@@ -68,6 +42,34 @@ public class RequestHandler extends Thread {
         } catch (IOException ie) {
             log.error(ie.getMessage());
         }
+    }
+
+    private String getParams(String requestUrl) {
+        int index = requestUrl.indexOf("?");
+        return requestUrl.substring(index + 1);
+    }
+
+    private String getRequestPath(String requestUrl) {
+        int index = requestUrl.indexOf("?");
+        return requestUrl.substring(0, index);
+    }
+
+    private void printRequestInfo(BufferedReader br) throws IOException {
+        String line;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+
+            if (line.equals("")) {
+                break;
+            }
+        }
+    }
+
+    private String getRequestUrl(String line) {
+        String requestUrl = null;
+        String[] tokens = line.split(" ");
+        requestUrl = tokens[1];
+        return requestUrl;
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
