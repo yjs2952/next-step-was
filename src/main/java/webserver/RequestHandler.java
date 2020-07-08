@@ -29,23 +29,11 @@ public class RequestHandler extends Thread {
 
             printRequestInfo(br);
 
-            User user = null;
-
-            if (requestUrl != null && requestUrl.contains("create?")) {
-                int index = requestUrl.indexOf("?");
-                String requestPath = requestUrl.substring(0, index);
-                String params = requestUrl.substring(index + 1);
-
-                Map<String, String> paramsMap = HttpRequestUtils.parseQueryString(params);
-
-                user = new User(paramsMap.get("userId"), paramsMap.get("password"), paramsMap.get("name"), paramsMap.get("email"));
-
+            if (requestUrl != null && requestUrl.contains("create")) {
+                Map<String, String> paramsMap = HttpRequestUtils.parseQueryString(getParams(requestUrl));
+                User user = new User(paramsMap.get("userId"), paramsMap.get("password"), paramsMap.get("name"), paramsMap.get("email"));
                 System.out.println(user.toString());
-
-                return;
             }
-
-
 
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = Files.readAllBytes(new File("./webapp" + requestUrl).toPath());
@@ -54,6 +42,16 @@ public class RequestHandler extends Thread {
         } catch (IOException ie) {
             log.error(ie.getMessage());
         }
+    }
+
+    private String getParams(String requestUrl) {
+        int index = requestUrl.indexOf("?");
+        return requestUrl.substring(index + 1);
+    }
+
+    private String getRequestPath(String requestUrl) {
+        int index = requestUrl.indexOf("?");
+        return requestUrl.substring(0, index);
     }
 
     private void printRequestInfo(BufferedReader br) throws IOException {
