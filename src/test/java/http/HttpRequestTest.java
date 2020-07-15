@@ -6,13 +6,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class HttpRequestTest {
+class HttpRequestTest {
     private String testDirectory = "./src/test/resources/";
 
     @Test
-    public void request_GET() throws Exception {
+    void request_GET() throws Exception {
         InputStream in = new FileInputStream(new File(testDirectory + "Http_GET.txt"));
         HttpRequest request = new HttpRequest(in);
 
@@ -23,7 +23,7 @@ public class HttpRequestTest {
     }
 
     @Test
-    public void request_POST() throws Exception {
+    void request_POST() throws Exception {
         InputStream in = new FileInputStream(new File(testDirectory + "Http_POST.txt"));
         HttpRequest request = new HttpRequest(in);
 
@@ -34,7 +34,7 @@ public class HttpRequestTest {
     }
     
     @Test
-    public void request_POST2() throws Exception {
+    void request_POST2() throws Exception {
         InputStream in = new FileInputStream(new File(testDirectory + "Http_POST2.txt"));
         HttpRequest request = new HttpRequest(in);
 

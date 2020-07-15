@@ -2,11 +2,11 @@ package http;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class RequestParamsTest {
+class RequestParamsTest {
 	@Test
-	public void add() throws Exception {
+	void add() throws Exception {
 		RequestParams params = new RequestParams();
 		params.addQueryString("id=1");
 		params.addBody("userId=javajigi&password=password");
