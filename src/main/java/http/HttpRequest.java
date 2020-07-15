@@ -35,6 +35,10 @@ public class HttpRequest {
 		return new HttpCookie(getHeader("Cookie"));
 	}
 
+	public HttpSession getSession(){
+		return HttpSessions.getSession(getCookies().getCookie("JSESSIONID"));
+	}
+
 	private String createRequestLine(BufferedReader br) throws IOException {
 		String line = br.readLine();
 		if (line == null) {
